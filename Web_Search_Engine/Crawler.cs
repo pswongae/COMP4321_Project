@@ -10,7 +10,7 @@ using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
 using porter;
-
+using System.Configuration;
 
 namespace Web_Search_Engine
 {
@@ -131,24 +131,31 @@ namespace Web_Search_Engine
                     getPageById(count) != null && !pageProperties[count].LastModified.Equals(page.LastModified))
                 {
                     fetchPage(page, StopwordList);
-                    pageProperties.Add(count, page);
+                    if (getPageById(count) == null)
+                    {
+                        pageProperties.Add(count, page);
+                    }
+                    else
+                    {
+                        pageProperties[count] = page;
+                    }
                     if (bDebug)
                     {
                         System.Diagnostics.Debug.WriteLine(count + ": " + page.Url);
                     }
-                }
-                foreach (string childLink in page.ChildLinks)
-                {
-                    if (allUrl.Count < num)
+                    foreach (string childLink in page.ChildLinks)
                     {
-                        if (!allUrl.Contains(childLink))
+                        if (allUrl.Count < num)
                         {
-                            allUrl.Add(childLink);
+                            if (!allUrl.Contains(childLink))
+                            {
+                                allUrl.Add(childLink);
+                            }
                         }
-                    }
-                    else
-                    {
-                        break;
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
                 count++;
@@ -501,15 +508,16 @@ namespace Web_Search_Engine
 
         public void loadTableFromDB()
         {
-            /*
-            LinkParent = ...
-            LinkChildren = Database.obtain...(...);
-            Keywords = ...
-            KeywordsT = ...
-            KeywordsInverted = ...
-            KeywordsTInverted = ...
-            WordProperties = ...
-            Pageproperties = ...
+            String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            Database db = new Database(conn);
+            LinkParent = db.obtainDictFromTable(1);
+            LinkChildren = db.obtainDictFromTable(0);
+            Keywords = db.obtainDictFromTableListString(3);
+            KeywordsT = db.obtainDictFromTableListString(5);
+            KeywordsInverted = db.obtainDictFromTableListString(4);
+            KeywordsTInverted = db.obtainDictFromTableListString(6);
+            WordProperties = db.obtainDictFromTableString(2);
+            PageProperties = db.obtainDictFromPage();
 
             List<KeyValuePair<int, Page>> pagePropertiesList = PageProperties.ToList();
             foreach (KeyValuePair<int, Page> pageProperty in pagePropertiesList)
@@ -517,40 +525,46 @@ namespace Web_Search_Engine
                 List<string> childList = new List<string>();
                 foreach (int pageId in LinkChildren[pageProperty.Key])
                 {
-                    childList.Add(getPageById(pageId));
+                    childList.Add(getPageById(pageId).Url);
                 }
-                pageProperty.Value.ChildList = childList;
+                pageProperty.Value.ChildLinks = childList;
 
                 List<string> keywords = new List<string>();
                 foreach (string keyword in Keywords[pageProperty.Key])
                 {
-                    keywords.Add(keyword);
+                    if (keyword.Trim().Length > 0) { 
+                        keywords.Add(keyword);
+                    }
                 }
                 pageProperty.Value.WordList = keywords;
 
                 List<string> keywordsT = new List<string>();
                 foreach (string keywordT in KeywordsT[pageProperty.Key])
                 {
-                    keywordsT.Add(keywordT);
+                    if (keywordT.Trim().Length > 0)
+                    {
+                        keywordsT.Add(keywordT);
+                    }
                 }
                 pageProperty.Value.WordTList = keywordsT;
             }
 
-            */
+            
         }
 
         public void updateTableIntoDB()
         {
-            /*
-            LinkParent
-            LinkChildren
-            Keywords
-            KeywordsT
-            KeywordsInverted
-            KeywordsTInverted
-            WordProperties
-            Pageproperties
-            */
+            String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            Database db = new Database(conn);
+            db.insertDictToTable(LinkParent, 1);
+            db.insertDictToTable(LinkChildren, 0);
+            db.insertDictToTable(Keywords, 3);
+            db.insertDictToTable(KeywordsT, 5);
+            db.insertDictToTable(KeywordsInverted, 4);
+            db.insertDictToTable(KeywordsTInverted, 6);
+            db.insertDictToTable(WordProperties, 2);
+            db.insertDictToPage(PageProperties, 7);
+            
         }
 
         public void printCrawlerResult(string fileName)
@@ -566,7 +580,7 @@ namespace Web_Search_Engine
                     List<string> printedKeywords = new List<string>();
                     foreach (string keywordT in KeywordsT[pageProperty.Key])
                     {
-                        if (!printedKeywords.Contains(keywordT, StringComparer.CurrentCultureIgnoreCase))
+                        if (!printedKeywords.Contains(keywordT, StringComparer.CurrentCultureIgnoreCase) && keywordT.Trim().Length > 0)
                         {
                             writer.Write(keywordT + " " + pageProperty.Value.getKeywordFrequency(keywordT) + "; ");
                             printedKeywords.Add(keywordT);
@@ -574,7 +588,7 @@ namespace Web_Search_Engine
                     }
                     foreach (string keyword in Keywords[pageProperty.Key])
                     {
-                        if (!printedKeywords.Contains(keyword, StringComparer.CurrentCultureIgnoreCase)) { 
+                        if (!printedKeywords.Contains(keyword, StringComparer.CurrentCultureIgnoreCase) && keyword.Trim().Length > 0) { 
                             writer.Write(keyword + " " + pageProperty.Value.getKeywordFrequency(keyword) + "; ");
                             printedKeywords.Add(keyword);
                         }

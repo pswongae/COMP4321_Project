@@ -13,15 +13,15 @@ namespace Web_Search_Engine
     {
         public int Id { get; set; }
 
-        public string Url { get; set; }
+        public string Url { get; set; } //
 
         public HtmlDocument Doc { get; set; }
 
-        public string LastModified { get; set; }
+        public string LastModified { get; set; } //
 
-        public int ContentLength { get; set; }
+        public int ContentLength { get; set; } //
 
-        public string Title { get; set; }
+        public string Title { get; set; } //
 
         // public string AllText { get; set; }
 
@@ -40,6 +40,14 @@ namespace Web_Search_Engine
             updateHeaderInfo();
         }
 
+        public Page(int id, string url, string lastModified, int contentLength, string title)
+        {
+            Id = id;
+            Url = url;
+            LastModified = lastModified;
+            ContentLength = contentLength;
+            Title = title;
+        }
         public void updateHeaderInfo()
         {
             string[] headerInfo = getHeaderInfo(new Uri(Url));

@@ -9,10 +9,12 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <h2><asp:Label id="abc" runat="server" Text=""/></h2>
-        <asp:Label id="def" runat="server" Text=""/>
-        <asp:Button id="ts" OnClick="submit" Text="Test" runat="server"/>
+        <asp:Label id="jkl" runat="server" Text="Click the button to start the crawler"/>
+        <asp:Button id="cr" OnClick="crawl" Text="Crawl" runat="server"/>
+        <asp:Label id="abc" runat="server" Text=""/>
         <br />
+        <asp:Label id="def" runat="server" Text="Click the button to execute test program"/>
+        <asp:Button id="ts" OnClick="test" Text="Test" runat="server"/>
         <asp:Label id="ghi" runat="server" Text=""/>
     </div>
     </form>

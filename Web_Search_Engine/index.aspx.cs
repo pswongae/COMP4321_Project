@@ -13,17 +13,23 @@ namespace Web_Search_Engine
         private string baseUriStr = "http://www.cse.ust.hk";
         //private string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/Movie/1.html";
 
-        private int num = 3;
+        private int num = 30;
 
         private Crawler crawler;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            cr.Enabled = true;
+            ts.Enabled = true;
+        }
+
+        protected void crawl(object sender, EventArgs e)
+        {
             Uri baseUri = new Uri(baseUriStr);
             crawler = new Crawler(baseUriStr);
             crawler.loadStopwordList("stopwords.txt");
 
-            // Dictionary<int, Page> oriPageProperties = new Dictionary<int, Page>();
+            Dictionary<int, Page> oriPageProperties = new Dictionary<int, Page>();
             // should be loaded from db
             crawler.loadTableFromDB();
 
@@ -35,12 +41,12 @@ namespace Web_Search_Engine
             Dictionary<int, List<string>> keywordsT = crawler.getKeywordsT(pageProperties);
             Dictionary<int, List<string>> keywordsTInverted = crawler.getKeywordsTInverted(keywordsT);
 
+            crawler.updateTableIntoDB();
+
             abc.Text = "Finished Crawling!";
-            def.Text = "Click the button to execute test program";
-            ts.Enabled = true;
         }
 
-        protected void submit(object sender, EventArgs e)
+        protected void test(object sender, EventArgs e)
         {
             TestProgram ts = new TestProgram();
             ts.printResult("spider_result.txt");
