@@ -10,33 +10,24 @@
 namespace Web_Search_Engine {
     
     
-    public partial class index {
+    public partial class stemword {
         
         /// <summary>
-        /// indexForm control.
+        /// stemwordForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm indexForm;
+        protected global::System.Web.UI.HtmlControls.HtmlForm stemwordForm;
         
         /// <summary>
-        /// crawlbutton control.
+        /// WordTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button crawlbutton;
-        
-        /// <summary>
-        /// testbutton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button testbutton;
+        protected global::System.Web.UI.WebControls.Table WordTable;
     }
 }

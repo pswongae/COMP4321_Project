@@ -10,33 +10,42 @@
 namespace Web_Search_Engine {
     
     
-    public partial class index {
+    public partial class search {
         
         /// <summary>
-        /// indexForm control.
+        /// searchForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm indexForm;
+        protected global::System.Web.UI.HtmlControls.HtmlForm searchForm;
         
         /// <summary>
-        /// crawlbutton control.
+        /// query control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button crawlbutton;
+        protected global::System.Web.UI.WebControls.TextBox query;
         
         /// <summary>
-        /// testbutton control.
+        /// submit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button testbutton;
+        protected global::System.Web.UI.WebControls.Button submit;
+        
+        /// <summary>
+        /// ResultTable control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Table ResultTable;
     }
 }

@@ -52,6 +52,7 @@ namespace Web_Search_Engine
             KeywordsT = new Dictionary<int, List<string>>();
             KeywordsInverted = new Dictionary<int, List<string>>();
             KeywordsTInverted = new Dictionary<int, List<string>>();
+            StopwordList = new List<string>();
         }
 
         public Page getPageById(int id)
@@ -100,7 +101,7 @@ namespace Web_Search_Engine
 
         public void loadStopwordList(string fileName)
         {
-            StopwordList = new List<string>();
+            //StopwordList = new List<string>();
             try
             {
                 string line;

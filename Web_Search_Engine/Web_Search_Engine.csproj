@@ -165,6 +165,8 @@
     <Content Include="readme.txt" />
     <Content Include="scripts\ai.0.15.0-build58334.js" />
     <Content Include="scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="search.aspx" />
+    <Content Include="stemword.aspx" />
     <Content Include="stopwords.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -188,7 +190,22 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="search.aspx.cs">
+      <DependentUpon>search.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="search.aspx.designer.cs">
+      <DependentUpon>search.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SearchEngine.cs" />
     <Compile Include="Stemmer.cs" />
+    <Compile Include="stemword.aspx.cs">
+      <DependentUpon>stemword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="stemword.aspx.designer.cs">
+      <DependentUpon>stemword.aspx</DependentUpon>
+    </Compile>
     <Compile Include="TestProgram.cs" />
     <Compile Include="WebForm1.aspx.cs">
       <DependentUpon>WebForm1.aspx</DependentUpon>

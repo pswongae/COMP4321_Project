@@ -152,6 +152,18 @@ namespace Web_Search_Engine
             }
             return count;
         }
+
+        public List<Tuple<string, int>> getFreqWords(int num)
+        {
+            List<string> wordList = WordTList.Concat(WordList).OrderByDescending(w => getKeywordFrequency(w)).ThenBy(w => w).Distinct().ToList();
+            List<Tuple<string, int>> freqWords = new List<Tuple<string, int>>();
+            for (int i = 0; i < num && i < wordList.Count; i++)
+            {
+                freqWords.Add(new Tuple<string, int>(wordList[i], getKeywordFrequency(wordList[i])));
+            }
+            return freqWords;
+        }
+
         /*
         public List<string> getChildList(Uri url)
         {

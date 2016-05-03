@@ -9,29 +9,32 @@ namespace Web_Search_Engine
 {
     public partial class index : System.Web.UI.Page
     {
-        //private string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
-        private string baseUriStr = "http://www.cse.ust.hk";
-        //private string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/Movie/1.html";
+        //private static string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
+        //private static string baseUriStr = "http://www.cse.ust.hk";
+        //private static string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/Movie/1.html";
+        private static string baseUriStr = "http://ihome.ust.hk/~pswongae/se/D1.html";
 
-        private int num = 30;
+        private int num = 500;
 
-        private Crawler crawler;
+        public static Crawler crawler;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            cr.Enabled = true;
-            ts.Enabled = true;
+            initCrawler();
+        }
+
+        public static void initCrawler()
+        {
+            crawler = new Crawler(baseUriStr);
+            //crawler.loadStopwordList("stopwords.txt");
+            crawler.loadTableFromDB();
         }
 
         protected void crawl(object sender, EventArgs e)
         {
             Uri baseUri = new Uri(baseUriStr);
-            crawler = new Crawler(baseUriStr);
-            crawler.loadStopwordList("stopwords.txt");
 
-            Dictionary<int, Page> oriPageProperties = new Dictionary<int, Page>();
-            // should be loaded from db
-            crawler.loadTableFromDB();
+            //Dictionary<int, Page> oriPageProperties = new Dictionary<int, Page>();
 
             Dictionary<int, Page> pageProperties = crawler.fetchPages(baseUri, num, crawler.PageProperties);
             Dictionary<int, List<int>> linkChildren = crawler.getLinkChildren(pageProperties);
@@ -42,18 +45,14 @@ namespace Web_Search_Engine
             Dictionary<int, List<string>> keywordsTInverted = crawler.getKeywordsTInverted(keywordsT);
 
             crawler.updateTableIntoDB();
-
-            abc.Text = "Finished Crawling!";
         }
 
         protected void test(object sender, EventArgs e)
         {
             TestProgram ts = new TestProgram();
             ts.printResult("spider_result.txt");
-            ghi.Text = "Please check the spider_result.txt";
-            //crawler.loadTableFromDB();
-            //crawler.printCrawlerResult("spider_result.txt");
         }
+
     }
 
 }
