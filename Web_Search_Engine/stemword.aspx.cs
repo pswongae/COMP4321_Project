@@ -13,11 +13,15 @@ namespace Web_Search_Engine
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (index.crawler == null)
+            if (Session["crawler"] == null)
             {
                 index.initCrawler();
+                Session["crawler"] = index.crawler;
             }
-            crawler = index.crawler;
+            else
+            {
+                crawler = (Crawler)Session["crawler"];
+            }
             loadAllStemwords();
         }
 

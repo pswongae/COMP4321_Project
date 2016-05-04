@@ -38,7 +38,9 @@ namespace Web_Search_Engine
 
         public List<string> StopwordList { get; set; }
 
-        public bool bDebug = true;
+        public bool bDebug = false;
+
+        public Database DB { get; set; }
 
         public Crawler(string uri)
         {
@@ -53,6 +55,8 @@ namespace Web_Search_Engine
             KeywordsInverted = new Dictionary<int, List<string>>();
             KeywordsTInverted = new Dictionary<int, List<string>>();
             StopwordList = new List<string>();
+            String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            DB = new Database(conn);
         }
 
         public Page getPageById(int id)
@@ -88,7 +92,7 @@ namespace Web_Search_Engine
 
         public int getWordId(string word)
         {
-            List<KeyValuePair<int, string>> list = WordProperties.ToList();
+            /*List<KeyValuePair<int, string>> list = WordProperties.ToList();
             foreach (KeyValuePair<int, string> pair in list)
             {
                 if (pair.Value.ToLower().Equals(word.ToLower()))
@@ -96,7 +100,13 @@ namespace Web_Search_Engine
                     return pair.Key;
                 }
             }
+            return -1;*/
+            if (WordProperties.Any(s => s.Value.Equals(word, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return WordProperties.FirstOrDefault(s => s.Value.Equals(word, StringComparison.InvariantCultureIgnoreCase)).Key;
+            }
             return -1;
+            
         }
 
         public void loadStopwordList(string fileName)
@@ -135,14 +145,12 @@ namespace Web_Search_Engine
                     if (getPageById(count) == null)
                     {
                         pageProperties.Add(count, page);
+                        DB.insertOrDeletePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
                     }
                     else
                     {
                         pageProperties[count] = page;
-                    }
-                    if (bDebug)
-                    {
-                        System.Diagnostics.Debug.WriteLine(count + ": " + page.Url);
+                        DB.updatePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
                     }
                     foreach (string childLink in page.ChildLinks)
                     {
@@ -158,6 +166,7 @@ namespace Web_Search_Engine
                             break;
                         }
                     }
+                    System.Diagnostics.Debug.WriteLine(count + ": " + page.Url);
                 }
                 count++;
             }
@@ -448,7 +457,8 @@ namespace Web_Search_Engine
                         wordList2.AddRange(wordArr);
                         foreach (string s in wordArr)
                         {
-                            stemmer.add(s.ToCharArray(), s.Length);
+                            string str = s.ToLower().Trim();
+                            stemmer.add(str.ToCharArray(), str.Length);
                             stemmer.stem();
                             string finalWord = stemmer.ToString().ToLower();
                             wordList.Add(finalWord);
@@ -458,8 +468,24 @@ namespace Web_Search_Engine
                                 {
                                     System.Diagnostics.Debug.WriteLine(WordProperties.Count + ": " + finalWord);
                                 }
+                                DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
                                 WordProperties.Add(WordProperties.Count, finalWord);
                             }
+
+                            if (!Keywords.ContainsKey(page.Id))
+                            {
+                                Keywords.Add(page.Id, new List<string>());
+                            }
+                            Keywords[page.Id].Add(finalWord);
+                            DB.insertOrDeleteForwardIndex(page.Id, finalWord, 3);
+
+                            int wordId = getWordId(finalWord);
+                            if (!KeywordsInverted.ContainsKey(wordId))
+                            {
+                                KeywordsInverted.Add(wordId, new List<string>());
+                            }
+                            KeywordsInverted[wordId].Add(page.Id + "," + (wordList.Count - 1));
+                            DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 4);
                         }
                     }
                 }
@@ -481,7 +507,8 @@ namespace Web_Search_Engine
                 List<string> wordArr = words.Split(' ').Where(wrd => (!stopword.Contains(wrd.ToLower()) && !wrd.Trim().Equals(""))).ToList();
                 foreach (string s in wordArr)
                 {
-                    stemmer.add(s.ToCharArray(), s.Length);
+                    string str = s.ToLower().Trim();
+                    stemmer.add(str.ToCharArray(), str.Length);
                     stemmer.stem();
                     string finalWord = stemmer.ToString().ToLower();
                     wordList.Add(finalWord);
@@ -491,8 +518,24 @@ namespace Web_Search_Engine
                         {
                             System.Diagnostics.Debug.WriteLine(WordProperties.Count + ": " + finalWord);
                         }
+                        DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
                         WordProperties.Add(WordProperties.Count, finalWord);
                     }
+
+                    if (!KeywordsT.ContainsKey(page.Id))
+                    {
+                        KeywordsT.Add(page.Id, new List<string>());
+                    }
+                    KeywordsT[page.Id].Add(finalWord);
+                    DB.insertOrDeleteForwardIndex(page.Id, finalWord, 5);
+
+                    int wordId = getWordId(finalWord);
+                    if (!KeywordsTInverted.ContainsKey(wordId))
+                    {
+                        KeywordsTInverted.Add(wordId, new List<string>());
+                    }
+                    KeywordsTInverted[wordId].Add(page.Id + "," + (wordList.Count - 1));
+                    DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 6);
                 }
             }
             return wordList;
@@ -504,12 +547,12 @@ namespace Web_Search_Engine
             {
                 return linkRelation[id];
             }
-            return null;
+            return new List<int>();
         }
 
         public void loadTableFromDB()
         {
-            String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            /*String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             Database db = new Database(conn);
             LinkParent = db.obtainDictFromTable(1);
             LinkChildren = db.obtainDictFromTable(0);
@@ -518,13 +561,24 @@ namespace Web_Search_Engine
             KeywordsInverted = db.obtainDictFromTableListString(4);
             KeywordsTInverted = db.obtainDictFromTableListString(6);
             WordProperties = db.obtainDictFromTableString(2);
-            PageProperties = db.obtainDictFromPage();
+            PageProperties = db.obtainDictFromPage();*/
+
+            LinkParent = DB.obtainDictFromTableNew(1);
+            LinkChildren = DB.obtainDictFromTableNew(0);
+            Keywords = DB.obtainDictFromTableListStringNew(3);
+            KeywordsT = DB.obtainDictFromTableListStringNew(5);
+            KeywordsInverted = DB.obtainDictFromTableListStringNew(4);
+            KeywordsTInverted = DB.obtainDictFromTableListStringNew(6);
+            WordProperties = DB.obtainDictFromTableStringNew(2);
+            PageProperties = DB.obtainDictFromPageNew();
+
+            System.Diagnostics.Debug.WriteLine("Setting page properties");
 
             List<KeyValuePair<int, Page>> pagePropertiesList = PageProperties.ToList();
             foreach (KeyValuePair<int, Page> pageProperty in pagePropertiesList)
             {
                 List<string> childList = new List<string>();
-                foreach (int pageId in LinkChildren[pageProperty.Key])
+                foreach (int pageId in getLinkListById(LinkChildren, pageProperty.Key))
                 {
                     childList.Add(getPageById(pageId).Url);
                 }
@@ -603,6 +657,41 @@ namespace Web_Search_Engine
                 }
             }
         }
+
+
+        public void fetchParentChildren(Dictionary<int, Page> pageProperties)
+        {
+            Dictionary<int, List<int>> linkChildren = new Dictionary<int, List<int>>();
+            List<KeyValuePair<int, Page>> list = pageProperties.ToList();
+            foreach (KeyValuePair<int, Page> pair in list)
+            {
+                List<int> childList = new List<int>();
+                foreach (string childLink in pair.Value.ChildLinks)
+                {
+                    int childId = getPageId(childLink);
+                    if (childId >= 0)
+                    {
+                        childList.Add(childId);
+
+                        if (!LinkChildren.ContainsKey(pair.Key))
+                        {
+                            LinkChildren.Add(pair.Key, new List<int>());
+                        }
+                        LinkChildren[pair.Key].Add(childId);
+                        DB.insertOrDeleteChildrenParent(pair.Key, childId, 0);
+
+                        if (!LinkParent.ContainsKey(childId))
+                        {
+                            LinkParent.Add(childId, new List<int>());
+                        }
+                        LinkParent[childId].Add(pair.Key);
+                        DB.insertOrDeleteChildrenParent(childId, pair.Key, 1);
+                    }
+                }
+                linkChildren.Add(pair.Key, childList);
+            }
+        }
+
     }
 }
  

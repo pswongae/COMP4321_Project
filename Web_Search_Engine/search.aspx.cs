@@ -13,11 +13,15 @@ namespace Web_Search_Engine
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (index.crawler == null)
+            if (Session["crawler"] == null)
             {
                 index.initCrawler();
+                Session["crawler"] = index.crawler;
             }
-            crawler = index.crawler;
+            else
+            {
+                crawler = (Crawler)Session["crawler"];
+            }
 
             string queryTerm = Request.Form.AllKeys.FirstOrDefault(s => s.Contains("query") && s != "query");
             if (queryTerm != null && queryTerm.Length > 0)
@@ -42,8 +46,20 @@ namespace Web_Search_Engine
             IEnumerable<KeyValuePair<int, Tuple<double, bool>>> scoreTable = se.ScoreTable.ToList();
             //scoreTable = scoreTable.OrderByDescending(a => a.Value.Item2).ThenByDescending(b => b.Value.Item1);
             scoreTable = scoreTable.OrderByDescending(b => b.Value.Item1);
+            int j = 0;
+            if (Session["history"] == null)
+            {
+                Session["history"] = new List<Tuple<string, string, IEnumerable<KeyValuePair<int, Tuple<double, bool>>>>>();
+            }
+            ((List< Tuple<string, string, IEnumerable<KeyValuePair<int, Tuple<double, bool>>>>>)
+                Session["history"]).Add(new Tuple<string, string, IEnumerable<KeyValuePair<int, Tuple<double, bool>>>> (DateTime.Now.ToLocalTime().ToString(), query.Text, scoreTable));
             foreach (KeyValuePair<int, Tuple<double, bool>> pair in scoreTable)
             {
+                if (j++ >= 50)
+                {
+                    break;
+                }
+
                 TableRow tRow = new TableRow();
                 tRow.VerticalAlign = VerticalAlign.Top;
                 ResultTable.Rows.Add(tRow);

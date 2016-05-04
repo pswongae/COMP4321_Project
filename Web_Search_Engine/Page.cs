@@ -135,7 +135,7 @@ namespace Web_Search_Engine
 
         public int getKeywordFrequency(string keyword)
         {
-            int count = 0;
+            /*int count = 0;
             for (int i = 0; i < WordTList.Count; i++)
             {
                 if (WordTList[i].ToLower().Equals(keyword.ToLower()))
@@ -149,7 +149,9 @@ namespace Web_Search_Engine
                 {
                     count++;
                 }
-            }
+            }*/
+            int count = WordTList.Count(s => s.Equals(keyword, StringComparison.InvariantCultureIgnoreCase)) +
+                WordList.Count(s => s.Equals(keyword, StringComparison.InvariantCultureIgnoreCase));
             return count;
         }
 

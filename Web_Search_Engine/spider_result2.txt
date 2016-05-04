@@ -1,0 +1,35 @@
+D
+http://ihome.ust.hk/~pswongae/se/D1.html
+Wed, 27 Apr 2016 09:08:19 GMT, 208
+d 1; to 2; be 2; or 1; not 1; 
+http://ihome.ust.hk/~pswongae/se/D2.html
+http://ihome.ust.hk/~pswongae/se/D3.html
+http://ihome.ust.hk/~pswongae/se/D4.html
+http://ihome.ust.hk/~pswongae/se/D5.html
+http://ihome.ust.hk/~pswongae/se/D6.html
+-------------------------------------------------------------------------------------------
+D
+http://ihome.ust.hk/~pswongae/se/D2.html
+Wed, 27 Apr 2016 09:08:20 GMT, 92
+d 1; to 2; live 2; or 1; not 1; 
+-------------------------------------------------------------------------------------------
+D
+http://ihome.ust.hk/~pswongae/se/D3.html
+Wed, 27 Apr 2016 09:08:20 GMT, 86
+d 1; live 1; and 1; let 1; die 1; 
+-------------------------------------------------------------------------------------------
+D
+http://ihome.ust.hk/~pswongae/se/D4.html
+Wed, 27 Apr 2016 09:08:18 GMT, 85
+d 1; die 1; anoth 1; dai 1; 
+-------------------------------------------------------------------------------------------
+D123
+http://ihome.ust.hk/~pswongae/se/D5.html
+Wed, 27 Apr 2016 10:33:19 GMT, 92
+d123 1; tomorrow 1; never 1; di 1; 
+-------------------------------------------------------------------------------------------
+D
+http://ihome.ust.hk/~pswongae/se/D6.html
+Wed, 27 Apr 2016 09:08:19 GMT, 89
+d 1; you 1; onli 1; live 1; twice 1; 
+-------------------------------------------------------------------------------------------

@@ -20,31 +20,43 @@ namespace Web_Search_Engine
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            initCrawler();
+            if (Session["crawler"] == null)
+            {
+                initCrawler();
+                Session["crawler"] = crawler;
+            }
+            else
+            {
+                crawler = (Crawler)Session["crawler"];
+            }
         }
 
         public static void initCrawler()
         {
             crawler = new Crawler(baseUriStr);
             //crawler.loadStopwordList("stopwords.txt");
+            //crawler.DB.clearTable();
             crawler.loadTableFromDB();
         }
 
         protected void crawl(object sender, EventArgs e)
         {
             Uri baseUri = new Uri(baseUriStr);
-
+            crawler.DB.clearTable();
             //Dictionary<int, Page> oriPageProperties = new Dictionary<int, Page>();
 
             Dictionary<int, Page> pageProperties = crawler.fetchPages(baseUri, num, crawler.PageProperties);
-            Dictionary<int, List<int>> linkChildren = crawler.getLinkChildren(pageProperties);
+            /*Dictionary<int, List<int>> linkChildren = crawler.getLinkChildren(pageProperties);
             Dictionary<int, List<int>> linkParent = crawler.getLinkParent(linkChildren);
             Dictionary<int, List<string>> keywords = crawler.getKeywords(pageProperties);
             Dictionary<int, List<string>> keywordsInverted = crawler.getKeywordsInverted(keywords);
             Dictionary<int, List<string>> keywordsT = crawler.getKeywordsT(pageProperties);
-            Dictionary<int, List<string>> keywordsTInverted = crawler.getKeywordsTInverted(keywordsT);
+            Dictionary<int, List<string>> keywordsTInverted = crawler.getKeywordsTInverted(keywordsT);*/
 
-            crawler.updateTableIntoDB();
+            //crawler.updateTableIntoDB();
+
+            crawler.fetchParentChildren(pageProperties);
+            //crawler.printCrawlerResult("spider_result.txt");
         }
 
         protected void test(object sender, EventArgs e)

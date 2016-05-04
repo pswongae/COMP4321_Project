@@ -147,16 +147,18 @@ namespace Web_Search_Engine
             }
         }
 
-        public Dictionary<int,List<int>> getChildrenOrParent(int mainId, int flag)
+        public List<int> getChildrenOrParent(int mainId, int flag)
         {
             string conn = conString;
             string cmd = "";
             Dictionary<int, List<int>> dict = new Dictionary<int, List<int>>();
-            if(flag==0)
+            List<int> list = new List<int>();
+
+            if (flag == 0)
             {
                 cmd = "SELECT * FROM _parent WHERE parentId= " + mainId;
             }
-            else if(flag==1)
+            else if (flag == 1)
             {
                 cmd = "SELECT * FROM _children WHERE childId= " + mainId;
             }
@@ -178,27 +180,27 @@ namespace Web_Search_Engine
                             //    //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
                             //    list.Add(Convert.ToInt32(str));
                             //}
-                            List<int> list = new List<int>();
-                            list.Add(fromId);
+                            //List<int> list = new List<int>();
+                            //list.Add(fromId);
                             list.Add(getId);
-                            dict.Add(autoid, list);
+                            //dict.Add(autoid, list);
                         }
                     }
                 }
             }
-            return dict;
+            return list;
         }
 
-        public List<Tuple<int,int,string>> getForwardIndex(int mainId,int flag)
+        public List<string> getForwardIndex(int mainId, int flag)
         {
             string conn = conString;
             string cmd = "";
-            List<Tuple<int, int, string>> list = new List<Tuple<int, int, string>>();
-            if(flag==3)
+            List<string> list = new List<string>();
+            if (flag == 3)
             {
                 cmd = "SELECT * FROM _content_forward_index WHERE pageId= " + mainId;
             }
-            else if(flag==5)
+            else if (flag == 5)
             {
                 cmd = "SELECT * FROM _title_forward_index WHERE pageId= " + mainId;
             }
@@ -212,16 +214,16 @@ namespace Web_Search_Engine
                     {
                         while (reader.Read())
                         {
-                            int autoid = reader.GetInt32(0);
-                            int pageId = reader.GetInt32(1);
+                            //int autoid = reader.GetInt32(0);
+                            //int pageId = reader.GetInt32(1);
                             string word = reader.GetString(2);
-                            Tuple<int, int, string> tuple = new Tuple<int, int, string>(autoid, pageId, word);
+                            //Tuple<int, string> tuple = new Tuple<int, string>(pageId, word);
                             //foreach (string str in array)
                             //{
                             //    //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
                             //    list.Add(Convert.ToInt32(str));
                             //}
-                            list.Add(tuple);
+                            list.Add(word);
                         }
                     }
                 }
@@ -230,16 +232,16 @@ namespace Web_Search_Engine
             return list;
         }
 
-        public List<Tuple<int,int,int,int>> getInvertedIndex(int mainId,int flag)
+        public List<Tuple<int, int>> getInvertedIndex(int mainId, int flag)
         {
             string conn = conString;
             string cmd = "";
-            List<Tuple<int, int, int, int>> list = new List<Tuple<int, int, int, int>>();
+            List<Tuple<int, int>> list = new List<Tuple<int, int>>();
             if (flag == 4)
             {
                 cmd = "SELECT * FROM _content_inverted_index WHERE wordId= " + mainId;
             }
-            else if(flag==6)
+            else if (flag == 6)
             {
                 cmd = "SELECT * FROM _title_inverted_index WHERE wordId= " + mainId;
             }
@@ -249,15 +251,15 @@ namespace Web_Search_Engine
                 {
                     con.Open();
                     SqlDataReader reader = command.ExecuteReader();
-                    if(reader.HasRows)
+                    if (reader.HasRows)
                     {
-                        while(reader.Read())
+                        while (reader.Read())
                         {
-                            int autoId = reader.GetInt32(0);
-                            int wordId = reader.GetInt32(1);
+                            //int autoId = reader.GetInt32(0);
+                            //int wordId = reader.GetInt32(1);
                             int pageId = reader.GetInt32(2);
                             int position = reader.GetInt32(3);
-                            Tuple<int, int, int, int> tuple = new Tuple<int, int, int, int>(autoId, wordId, pageId, position);
+                            Tuple<int, int> tuple = new Tuple<int, int>(pageId, position);
                             list.Add(tuple);
                         }
                     }
@@ -273,13 +275,13 @@ namespace Web_Search_Engine
             string keyword = "";
             using (SqlConnection con = new SqlConnection(conn))
             {
-                using (SqlCommand command = new SqlCommand)
+                using (SqlCommand command = new SqlCommand(cmd, con))
                 {
                     con.Open();
                     SqlDataReader reader = command.ExecuteReader();
-                    if(reader.HasRows)
+                    if (reader.HasRows)
                     {
-                        while(reader.Read())
+                        while (reader.Read())
                         {
                             keyword = reader.GetString(1);
                         }
@@ -289,7 +291,7 @@ namespace Web_Search_Engine
             return keyword;
         }
 
-        public Tuple<int,string,string,int,string> getPage(int id)
+        public Tuple<int, string, string, int, string> getPage(int id)
         {
             string conn = conString;
             string cmd = "SELECT * FROM page WHERE Id=" + id;
@@ -300,9 +302,9 @@ namespace Web_Search_Engine
                 {
                     con.Open();
                     SqlDataReader reader = command.ExecuteReader();
-                    if(reader.HasRows)
+                    if (reader.HasRows)
                     {
-                        while(reader.Read())
+                        while (reader.Read())
                         {
                             tup = new Tuple<int, string, string, int, string>(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetInt32(3), reader.GetString(4));
                         }
@@ -312,8 +314,177 @@ namespace Web_Search_Engine
             return tup;
         }
 
-        //
-        public void insertDictToTable(Dictionary<int,string> dict, int flag)
+        //new 733pm3/5/2016
+        public Dictionary<int, List<int>> obtainDictFromTableNew(int flag)
+        {
+            //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            string conn = conString;
+            string cmd = "";
+            if (flag == 0)
+            {
+                cmd = "SELECT DISTINCT parentId FROM _parent ";
+            }
+            else
+            {
+                cmd = "SELECT DISTINCT childId FROM _children ";
+            }
+            Dictionary<int, List<int>> dict = new Dictionary<int, List<int>>();
+            List<int> idList = new List<int>();
+
+
+            using (SqlConnection con = new SqlConnection(conn))
+            {
+                using (SqlCommand command = new SqlCommand(cmd, con))
+                {
+                    con.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            idList.Add(id);
+                        }
+                    }
+                }
+            }
+
+            foreach (int id in idList)
+            {
+                List<int> list = getChildrenOrParent(id, flag);
+                dict.Add(id, list);
+            }
+            return dict;
+        }
+        public Dictionary<int, string> obtainDictFromTableStringNew(int flag)
+        {
+            //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            string conn = conString;
+            string cmd = "";
+            switch (flag)
+            {
+                case 2: cmd = "SELECT * FROM keyword"; break;
+            }
+            Dictionary<int, string> dict = new Dictionary<int, string>();
+            using (SqlConnection con = new SqlConnection(conn))
+            {
+                using (SqlCommand command = new SqlCommand(cmd, con))
+                {
+                    con.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string result = reader.GetString(1);
+                            //foreach (string str in array)
+                            //{
+                            //    //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
+                            //    list.Add(Convert.ToInt32(str));
+                            //}
+                            dict.Add(id, result);
+                        }
+                    }
+                }
+            }
+            return dict;
+        }
+        public Dictionary<int, List<string>> obtainDictFromTableListStringNew(int flag)
+        {
+            //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            string conn = conString;
+            string cmd = "";
+            switch (flag)
+            {
+                case 3: cmd = "SELECT DISTINCT pageId FROM _content_forward_index"; break;
+                case 4: cmd = "SELECT DISTINCT  wordId FROM _content_inverted_index"; break;
+                case 5: cmd = "SELECT DISTINCT pageId FROM _title_forward_index"; break;
+                case 6: cmd = "SELECT DISTINCT wordId FROM _title_inverted_index"; break;
+            }
+            List<int> idList = new List<int>();
+            Dictionary<int, List<string>> dict = new Dictionary<int, List<string>>();
+            using (SqlConnection con = new SqlConnection(conn))
+            {
+                using (SqlCommand command = new SqlCommand(cmd, con))
+                {
+                    con.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            //string result = reader.GetString(1);
+                            idList.Add(id);
+                            //foreach (string str in array)
+                            //{
+                            //    //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
+                            //    list.Add(Convert.ToInt32(str));
+                            //}
+                        }
+                    }
+                }
+            }
+            foreach (int id in idList)
+            {
+                if (flag == 3 || flag == 5)
+                {
+                    List<string> list = getForwardIndex(id, flag);
+                    dict.Add(id, list);
+                }
+                else
+                {
+                    List<string> stringList = new List<string>();
+                    List<Tuple<int, int>> list = getInvertedIndex(id, flag);
+                    foreach (Tuple<int, int> tuple in list)
+                    {
+                        stringList.Add(tuple.Item1 + "," + tuple.Item2);
+                    }
+                    dict.Add(id, stringList);
+                }
+            }
+            return dict;
+        }
+        public Dictionary<int, Page> obtainDictFromPageNew()
+        {
+            //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            string conn = conString;
+            string cmd = "SELECT * FROM page";
+            Dictionary<int, Page> dict = new Dictionary<int, Page>();
+            using (SqlConnection con = new SqlConnection(conn))
+            {
+                using (SqlCommand command = new SqlCommand(cmd, con))
+                {
+                    con.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string url = reader.GetString(1);
+                            string lastModified = reader.GetString(2);
+                            int contentLength = reader.GetInt32(3);
+                            string title = reader.GetString(4);
+                            Page pg = new Page(id, url, lastModified, contentLength, title);
+                            //foreach (string str in array)
+                            //{
+                            //    //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
+                            //    list.Add(Convert.ToInt32(str));
+                            //}
+                            dict.Add(id, pg);
+                        }
+                    }
+                }
+            }
+            return dict;
+        }
+
+
+
+        //old
+        public void insertDictToTable(Dictionary<int, string> dict, int flag)
         {
             string conn = conString;
             using (SqlConnection con = new SqlConnection(conn))
@@ -334,7 +505,7 @@ namespace Web_Search_Engine
         }
 
 
-        public void insertDictToPage(Dictionary<int,Page> dict, int flag)
+        public void insertDictToPage(Dictionary<int, Page> dict, int flag)
         {
             string conn = conString;
             using (SqlConnection con = new SqlConnection(conn))
@@ -359,7 +530,7 @@ namespace Web_Search_Engine
 
         }
 
-        public void insertDictToTable(Dictionary<int,List<string>> dict, int flag)
+        public void insertDictToTable(Dictionary<int, List<string>> dict, int flag)
         {
             string conn = conString;
             using (SqlConnection con = new SqlConnection(conn))
@@ -383,7 +554,7 @@ namespace Web_Search_Engine
 
         }
 
-        public void insertDictToTable(Dictionary<int,List<int>> dict, int flag)
+        public void insertDictToTable(Dictionary<int, List<int>> dict, int flag)
         {
             //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             //Response.Write("<Script language='JavaScript'>alert('" + conn + "');</Script>");
@@ -458,7 +629,7 @@ namespace Web_Search_Engine
                             foreach (string str in array)
                             {
                                 //Response.Write("<Script language='JavaScript'>alert('" + str + "');</Script>");
-                                if(str.Trim().Length>0)
+                                if (str.Trim().Length > 0)
                                 {
                                     list.Add(Convert.ToInt32(str));
                                 }
@@ -479,7 +650,7 @@ namespace Web_Search_Engine
         5=title forward index
         6=title inverted index
         */
-        public Dictionary<int,string> obtainDictFromTableString(int flag)
+        public Dictionary<int, string> obtainDictFromTableString(int flag)
         {
             //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             string conn = conString;
@@ -513,7 +684,7 @@ namespace Web_Search_Engine
             }
             return dict;
         }
-        public Dictionary<int,List<string>> obtainDictFromTableListString(int flag)
+        public Dictionary<int, List<string>> obtainDictFromTableListString(int flag)
         {
             //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             string conn = conString;
@@ -552,7 +723,7 @@ namespace Web_Search_Engine
             return dict;
         }
 
-        public Dictionary<int,Page> obtainDictFromPage()
+        public Dictionary<int, Page> obtainDictFromPage()
         {
             //string conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             string conn = conString;
