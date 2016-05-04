@@ -145,12 +145,12 @@ namespace Web_Search_Engine
                     if (getPageById(count) == null)
                     {
                         pageProperties.Add(count, page);
-                        DB.insertOrDeletePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
+                        //DB.insertOrDeletePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
                     }
                     else
                     {
                         pageProperties[count] = page;
-                        DB.updatePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
+                        //DB.updatePage(count, page.Url, page.LastModified, page.ContentLength, page.Title);
                     }
                     foreach (string childLink in page.ChildLinks)
                     {
@@ -468,7 +468,7 @@ namespace Web_Search_Engine
                                 {
                                     System.Diagnostics.Debug.WriteLine(WordProperties.Count + ": " + finalWord);
                                 }
-                                DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
+                                //DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
                                 WordProperties.Add(WordProperties.Count, finalWord);
                             }
 
@@ -477,7 +477,7 @@ namespace Web_Search_Engine
                                 Keywords.Add(page.Id, new List<string>());
                             }
                             Keywords[page.Id].Add(finalWord);
-                            DB.insertOrDeleteForwardIndex(page.Id, finalWord, 3);
+                            //DB.insertOrDeleteForwardIndex(page.Id, finalWord, 3);
 
                             int wordId = getWordId(finalWord);
                             if (!KeywordsInverted.ContainsKey(wordId))
@@ -485,7 +485,7 @@ namespace Web_Search_Engine
                                 KeywordsInverted.Add(wordId, new List<string>());
                             }
                             KeywordsInverted[wordId].Add(page.Id + "," + (wordList.Count - 1));
-                            DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 4);
+                            //DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 4);
                         }
                     }
                 }
@@ -518,7 +518,7 @@ namespace Web_Search_Engine
                         {
                             System.Diagnostics.Debug.WriteLine(WordProperties.Count + ": " + finalWord);
                         }
-                        DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
+                        //DB.insertOrDeleteKeyword(WordProperties.Count, finalWord);
                         WordProperties.Add(WordProperties.Count, finalWord);
                     }
 
@@ -527,7 +527,7 @@ namespace Web_Search_Engine
                         KeywordsT.Add(page.Id, new List<string>());
                     }
                     KeywordsT[page.Id].Add(finalWord);
-                    DB.insertOrDeleteForwardIndex(page.Id, finalWord, 5);
+                    //DB.insertOrDeleteForwardIndex(page.Id, finalWord, 5);
 
                     int wordId = getWordId(finalWord);
                     if (!KeywordsTInverted.ContainsKey(wordId))
@@ -535,7 +535,7 @@ namespace Web_Search_Engine
                         KeywordsTInverted.Add(wordId, new List<string>());
                     }
                     KeywordsTInverted[wordId].Add(page.Id + "," + (wordList.Count - 1));
-                    DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 6);
+                    //DB.insertOrDeleteInvertedIndex(wordId, page.Id, wordList.Count - 1, 6);
                 }
             }
             return wordList;
@@ -609,7 +609,7 @@ namespace Web_Search_Engine
 
         public void updateTableIntoDB()
         {
-            String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
+            /*String conn = ConfigurationManager.ConnectionStrings["test"].ConnectionString;
             Database db = new Database(conn);
             db.insertDictToTable(LinkParent, 1);
             db.insertDictToTable(LinkChildren, 0);
@@ -618,8 +618,17 @@ namespace Web_Search_Engine
             db.insertDictToTable(KeywordsInverted, 4);
             db.insertDictToTable(KeywordsTInverted, 6);
             db.insertDictToTable(WordProperties, 2);
-            db.insertDictToPage(PageProperties, 7);
-            
+            db.insertDictToPage(PageProperties, 7);*/
+
+            DB.insertDictToTableNew(LinkParent, 1);
+            DB.insertDictToTableNew(LinkChildren, 0);
+            DB.insertDictToTableNew(Keywords, 3);
+            DB.insertDictToTableNew(KeywordsT, 5);
+            DB.insertDictToTableNew(KeywordsInverted, 4);
+            DB.insertDictToTableNew(KeywordsTInverted, 6);
+            DB.insertDictToTableNew(WordProperties, 2);
+            DB.insertDictToPageNew(PageProperties, 7);
+
         }
 
         public void printCrawlerResult(string fileName)
@@ -678,14 +687,14 @@ namespace Web_Search_Engine
                             LinkChildren.Add(pair.Key, new List<int>());
                         }
                         LinkChildren[pair.Key].Add(childId);
-                        DB.insertOrDeleteChildrenParent(pair.Key, childId, 0);
+                        //DB.insertOrDeleteChildrenParent(pair.Key, childId, 0);
 
                         if (!LinkParent.ContainsKey(childId))
                         {
                             LinkParent.Add(childId, new List<int>());
                         }
                         LinkParent[childId].Add(pair.Key);
-                        DB.insertOrDeleteChildrenParent(childId, pair.Key, 1);
+                        //DB.insertOrDeleteChildrenParent(childId, pair.Key, 1);
                     }
                 }
                 linkChildren.Add(pair.Key, childList);

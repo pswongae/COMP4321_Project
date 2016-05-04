@@ -758,10 +758,188 @@ namespace Web_Search_Engine
             return dict;
         }
 
+        // new
+        public void insertDictToTableNew(Dictionary<int, List<int>> dict, int flag)
+        {
+            string conn = conString;
+            {
+                if (flag == 1)
+                {
+                    DataTable table = new DataTable("_children");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("childId", typeof(int)));
+                    table.Columns.Add(new DataColumn("parentId", typeof(int)));
+                    foreach (KeyValuePair<int, List<int>> pair in dict)
+                    {
+                        foreach (int i in pair.Value)
+                        {
+                            table.Rows.Add(0, pair.Key, i);
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_children";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+                else
+                {
+                    DataTable table = new DataTable("_parent");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("parentId", typeof(int)));
+                    table.Columns.Add(new DataColumn("childrenId", typeof(int)));
+                    foreach (KeyValuePair<int, List<int>> pair in dict)
+                    {
+                        foreach (int i in pair.Value)
+                        {
+                            table.Rows.Add(0, pair.Key, i);
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_parent";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+            }
+        }
 
+        // new
+        public void insertDictToTableNew(Dictionary<int, List<string>> dict, int flag)
+        {
+            string conn = conString;
+            {
+                if (flag == 3)
+                {
+                    DataTable table = new DataTable("_content_forward_index");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("pageId", typeof(int)));
+                    table.Columns.Add(new DataColumn("contentWords", typeof(string)));
+                    foreach (KeyValuePair<int, List<string>> pair in dict)
+                    {
+                        foreach (string s in pair.Value)
+                        {
+                            table.Rows.Add(0, pair.Key, s);
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_content_forward_index";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+                else if (flag == 5)
+                {
+                    DataTable table = new DataTable("_title_forward_index");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("pageId", typeof(int)));
+                    table.Columns.Add(new DataColumn("titleWords", typeof(string)));
+                    foreach (KeyValuePair<int, List<string>> pair in dict)
+                    {
+                        foreach (string s in pair.Value)
+                        {
+                            table.Rows.Add(0, pair.Key, s);
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_title_forward_index";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+                else if (flag == 4)
+                {
+                    DataTable table = new DataTable("_content_inverted_index");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("wordId", typeof(int)));
+                    table.Columns.Add(new DataColumn("pageId", typeof(int)));
+                    table.Columns.Add(new DataColumn("position", typeof(int)));
+                    foreach (KeyValuePair<int, List<string>> pair in dict)
+                    {
+                        foreach (string s in pair.Value)
+                        {
+                            string[] strArr = s.Split(',');
+                            table.Rows.Add(0, pair.Key, (int)Int32.Parse(strArr[0]), (int)Int32.Parse(strArr[1]));
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_content_inverted_index";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+                else if (flag == 6)
+                {
+                    DataTable table = new DataTable("_title_inverted_index");
+                    table.Columns.Add(new DataColumn("Id", typeof(int)));
+                    table.Columns.Add(new DataColumn("wordId", typeof(int)));
+                    table.Columns.Add(new DataColumn("pageId", typeof(int)));
+                    table.Columns.Add(new DataColumn("position", typeof(int)));
+                    foreach (KeyValuePair<int, List<string>> pair in dict)
+                    {
+                        foreach (string s in pair.Value)
+                        {
+                            string[] strArr = s.Split(',');
+                            table.Rows.Add(0, pair.Key, (int)Int32.Parse(strArr[0]), (int)Int32.Parse(strArr[1]));
+                        }
+                    }
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.BulkCopyTimeout = 600; // in seconds
+                        bulkCopy.DestinationTableName = "_title_inverted_index";
+                        bulkCopy.WriteToServer(table);
+                    }
+                }
+            }
+        }
+        // new
+        public void insertDictToTableNew(Dictionary<int, string> dict, int flag)
+        {
+            string conn = conString;
 
+            DataTable table = new DataTable("keyword");
+            table.Columns.Add(new DataColumn("wordId", typeof(int)));
+            table.Columns.Add(new DataColumn("word", typeof(string)));
+            foreach (KeyValuePair<int, string> pair in dict)
+            {
+                table.Rows.Add(pair.Key, pair.Value);
+            }
+            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+            {
+                bulkCopy.BulkCopyTimeout = 600; // in seconds
+                bulkCopy.DestinationTableName = "keyword";
+                bulkCopy.WriteToServer(table);
+            }
+        }
 
+        // new
+        public void insertDictToPageNew(Dictionary<int, Page> dict, int flag)
+        {
+            string conn = conString;
 
+            DataTable table = new DataTable("page");
+            table.Columns.Add(new DataColumn("Id", typeof(string)));
+            table.Columns.Add(new DataColumn("url", typeof(string)));
+            table.Columns.Add(new DataColumn("lastModified", typeof(string)));
+            table.Columns.Add(new DataColumn("contentLength", typeof(int)));
+            table.Columns.Add(new DataColumn("title", typeof(string)));
+            foreach (KeyValuePair<int, Page> pair in dict)
+            {
+                table.Rows.Add(pair.Key, pair.Value.Url, pair.Value.LastModified, pair.Value.ContentLength, pair.Value.Title);
+            }
+            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+            {
+                bulkCopy.BulkCopyTimeout = 600; // in seconds
+                bulkCopy.DestinationTableName = "page";
+                bulkCopy.WriteToServer(table);
+            }
+
+        }
 
     }
 }

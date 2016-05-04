@@ -9,10 +9,10 @@ namespace Web_Search_Engine
 {
     public partial class index : System.Web.UI.Page
     {
-        //private static string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
+        private static string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm";
         //private static string baseUriStr = "http://www.cse.ust.hk";
         //private static string baseUriStr = "http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/Movie/1.html";
-        private static string baseUriStr = "http://ihome.ust.hk/~pswongae/se/D1.html";
+        //private static string baseUriStr = "http://ihome.ust.hk/~pswongae/se/D1.html";
 
         private int num = 500;
 
@@ -34,7 +34,7 @@ namespace Web_Search_Engine
         public static void initCrawler()
         {
             crawler = new Crawler(baseUriStr);
-            //crawler.loadStopwordList("stopwords.txt");
+            crawler.loadStopwordList("stopwords.txt");
             //crawler.DB.clearTable();
             crawler.loadTableFromDB();
         }
@@ -56,6 +56,7 @@ namespace Web_Search_Engine
             //crawler.updateTableIntoDB();
 
             crawler.fetchParentChildren(pageProperties);
+            crawler.updateTableIntoDB();
             //crawler.printCrawlerResult("spider_result.txt");
         }
 
